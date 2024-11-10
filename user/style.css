@@ -1,0 +1,49 @@
+/* Memperbesar navbar */
+.navbar {
+    padding: 1.5rem 1rem;
+}
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.navbar-nav .nav-link {
+    font-size: 1.2rem;
+    margin-right: 1rem;
+}
+
+/* Memusatkan konten menu */
+.content-container {
+    max-width: 1200px;
+    margin: 80px auto 20px auto; 
+    padding: 20px;
+}
+.menu-section {
+    margin-top: 20px;
+}
+.menu-title {
+    font-weight: bold;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+.menu-title i {
+    margin-right: 10px;
+}
+.menu-item {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.menu-item img {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+.menu-item img:hover {
+    transform: scale(1.1); /* Efek zoom saat hover */
+}
+.menu-item a {
+    text-decoration: none;
+    color: inherit;
+}
