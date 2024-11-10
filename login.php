@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="src/css/login.css">
     <title>login</title>
 </head>
 <body>
@@ -34,7 +34,7 @@
             <input type="submit" class="input-submit" id="Login">
         </div>
         <div class="sing-up">
-            <p>Don't have account <a href="#">Sign up</a></p>
+            <p>Don't have account <a href="register.php">Sign up</a></p>
         </div>
     </div>
 </body>
