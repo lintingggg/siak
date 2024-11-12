@@ -93,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link rel="stylesheet" href="src/css/register.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <!-- Tambahkan link SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -119,12 +120,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="no_telepon">No Telepon</label>
             </div>
             <div class="input-box">
-                <input type="password" name="password" class="input-field" required autocomplete="off">
+                <input type="password" id="password" name="password" class="input-field" required autocomplete="off">
                 <label for="password">Password</label>
+                <span class="toggle-password" onclick="togglePasswordVisibility('password')"><i class="fa-regular fa-eye"></i></span>
             </div>
             <div class="input-box">
-                <input type="password" name="confirm_password" class="input-field" required autocomplete="off">
+                <input type="password" id="confirm_password" name="confirm_password" class="input-field" required autocomplete="off">
                 <label for="confirm_password">Confirm Password</label>
+                <span class="toggle-password" onclick="togglePasswordVisibility('confirm_password')"><i class="fa-regular fa-eye"></i></span>
             </div>
             <div class="input-box">
                 <input type="submit" class="input-submit" value="Register">
@@ -151,6 +154,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             });
         }
     });
+    function togglePasswordVisibility(inputId) {
+        const passwordField = document.getElementById(inputId);
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+        } else {
+            passwordField.type = 'password';
+        }
+    }
     </script>
 </body>
 </html>
