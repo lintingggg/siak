@@ -1,25 +1,98 @@
+<?php
+session_start(); // Memulai sesi
+include 'config/connection.php'; // Koneksi database
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Query untuk mencari pengguna berdasarkan email dan password
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND password = ?");
+    $stmt->bind_param("ss", $email, $password);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+
+        // Cek apakah pengguna aktif
+        if ($user['status_aktif'] == 1) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['nama_lengkap'];
+            $_SESSION['email'] = $user['email'];
+            $_SESSION['role'] = $user['role'];
+
+            // Jika login berhasil
+            echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Login Berhasil',
+                        text: 'Selamat datang, " . $user['nama_lengkap'] . "!',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = 'user/dashboard.html';
+                    });
+                });
+            </script>";
+        } else {
+            // Jika akun tidak aktif
+            echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Akun Tidak Aktif',
+                        text: 'Silakan hubungi admin.',
+                        confirmButtonText: 'OK'
+                    });
+                });
+            </script>";
+        }
+    } else {
+        // Jika email atau password salah
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Gagal',
+                    text: 'Email atau password salah!',
+                    confirmButtonText: 'Coba Lagi'
+                }).then(() => {
+                    window.location.href = 'login.php';
+                });
+            });
+        </script>";
+    }
+    $stmt->close();
+    $conn->close();
+}
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="src/css/login.css">
-    <title>login</title>
+    <title>Login</title>
+    <link rel="stylesheet" href="src\css/login.css">
+    <!-- Tambahkan link SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <div class="login-box">
-        <div class="login-header">
-            <header>Login</header>
-                
+<div class="login-box">
+    <div class="login-header">
+        <header>Login</header>
+    </div>
+    <form action="login.php" method="POST">
+        <div class="input-box">
+            <input type="email" name="email" class="input-field" required autocomplete="off">
+            <label for="email">Email</label>
         </div>
         <div class="input-box">
-            <input type="text" class="input-field" id="email">
-            <label for="email">email</label>
-        </div>
-        <div class="input-box">
-            <input type="text" class="input-field" id="password">
-            <label for="password">password</label>
+            <input type="password" name="password" class="input-field" required autocomplete="off">
+            <label for="password">Password</label>
         </div>
         <div class="forgot">
             <section>
@@ -31,11 +104,14 @@
             </section>
         </div>
         <div class="input-box">
-            <input type="submit" class="input-submit" id="Login">
+            <input type="submit" class="input-submit" value="Login">
         </div>
-        <div class="sing-up">
-            <p>Don't have account <a href="register.php">Sign up</a></p>
+        <div class="sign-up">
+            <p>Don't have an account? <a href="register.php">Sign up</a></p>
         </div>
-    </div>
+    </form>
+</div>
 </body>
 </html>
+
+
