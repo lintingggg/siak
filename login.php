@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="check">Remember me</label>
             </section>
             <section>
-                <a href="#" class="forgot-link">Forgot password?</a>
+                <a href="forgot-password.php" class="forgot-link">Forgot password?</a>
             </section>
         </div>
         <div class="input-box">
