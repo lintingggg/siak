@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Pembuatan Kartu Keluarga</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .add-member {
+            background-color: #007BFF;
+            color: white;
+        }
+        .add-member:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        function addFamilyMember() {
+            const familyMembersContainer = document.getElementById('family-members');
+            const memberIndex = familyMembersContainer.children.length + 1;
+
+            const memberDiv = document.createElement('div');
+            memberDiv.className = 'form-group';
+            memberDiv.innerHTML = `
+                <h4>Anggota Keluarga ${memberIndex}</h4>
+                <label for="nama-anggota-${memberIndex}">Nama:</label>
+                <input type="text" id="nama-anggota-${memberIndex}" name="nama_anggota[]" required>
+                
+                <label for="nik-anggota-${memberIndex}">NIK:</label>
+                <input type="text" id="nik-anggota-${memberIndex}" name="nik_anggota[]" required>
+                
+                <label for="hubungan-${memberIndex}">Hubungan:</label>
+                <select id="hubungan-${memberIndex}" name="hubungan[]" required>
+                    <option value="Suami">Suami</option>
+                    <option value="Istri">Istri</option>
+                    <option value="Anak">Anak</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
+            `;
+            familyMembersContainer.appendChild(memberDiv);
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Form Pembuatan Kartu Keluarga</h2>
+        <form action="/submit-kartu-keluarga" method="post">
+            <!-- Informasi Kepala Keluarga -->
+            <div class="form-group">
+                <label for="nama-kepala">Nama Kepala Keluarga:</label>
+                <input type="text" id="nama-kepala" name="nama_kepala" required>
+            </div>
+            <div class="form-group">
+                <label for="nik-kepala">NIK Kepala Keluarga:</label>
+                <input type="text" id="nik-kepala" name="nik_kepala" required>
+            </div>
+
+            <!-- Informasi Alamat -->
+            <div class="form-group">
+                <label for="alamat">Alamat:</label>
+                <textarea id="alamat" name="alamat" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="rt">RT:</label>
+                <input type="number" id="rt" name="rt" required>
+            </div>
+            <div class="form-group">
+                <label for="rw">RW:</label>
+                <input type="number" id="rw" name="rw" required>
+            </div>
+            <div class="form-group">
+                <label for="kecamatan">Kecamatan:</label>
+                <input type="text" id="kecamatan" name="kecamatan" required>
+            </div>
+            <div class="form-group">
+                <label for="kelurahan">Kelurahan:</label>
+                <input type="text" id="kelurahan" name="kelurahan" required>
+            </div>
+
+            <!-- Anggota Keluarga -->
+            <div id="family-members">
+                <div class="form-group">
+                    <h4>Anggota Keluarga 1</h4>
+                    <label for="nama-anggota-1">Nama:</label>
+                    <input type="text" id="nama-anggota-1" name="nama_anggota[]" required>
+                    
+                    <label for="nik-anggota-1">NIK:</label>
+                    <input type="text" id="nik-anggota-1" name="nik_anggota[]" required>
+                    
+                    <label for="hubungan-1">Hubungan:</label>
+                    <select id="hubungan-1" name="hubungan[]" required>
+                        <option value="Suami">Suami</option>
+                        <option value="Istri">Istri</option>
+                        <option value="Anak">Anak</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+            </div>
+            <button type="button" class="add-member" onclick="addFamilyMember()">Tambah Anggota Keluarga</button>
+            
+            <!-- Submit -->
+            <button type="submit">Ajukan Kartu Keluarga</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Akta Perceraian</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Form Akta Perceraian</h2>
+        <form action="/submit-akta" method="post">
+            <!-- Informasi Suami -->
+            <div class="form-group">
+                <label for="nama-suami">Nama Suami:</label>
+                <input type="text" id="nama-suami" name="nama_suami" required>
+            </div>
+            <div class="form-group">
+                <label for="nik-suami">NIK Suami:</label>
+                <input type="text" id="nik-suami" name="nik_suami" required>
+            </div>
+
+            <!-- Informasi Istri -->
+            <div class="form-group">
+                <label for="nama-istri">Nama Istri:</label>
+                <input type="text" id="nama-istri" name="nama_istri" required>
+            </div>
+            <div class="form-group">
+                <label for="nik-istri">NIK Istri:</label>
+                <input type="text" id="nik-istri" name="nik_istri" required>
+            </div>
+
+            <!-- Informasi Pernikahan -->
+            <div class="form-group">
+                <label for="tanggal-pernikahan">Tanggal Pernikahan:</label>
+                <input type="date" id="tanggal-pernikahan" name="tanggal_pernikahan" required>
+            </div>
+
+            <!-- Informasi Perceraian -->
+            <div class="form-group">
+                <label for="tanggal-perceraian">Tanggal Perceraian:</label>
+                <input type="date" id="tanggal-perceraian" name="tanggal_perceraian" required>
+            </div>
+            <div class="form-group">
+                <label for="alasan">Alasan Perceraian:</label>
+                <textarea id="alasan" name="alasan_perceraian" rows="4" required></textarea>
+            </div>
+
+            <!-- Dokumen Pendukung -->
+            <div class="form-group">
+                <label for="dokumen">Unggah Dokumen Pendukung:</label>
+                <input type="file" id="dokumen" name="dokumen_pendukung" accept=".pdf,.jpg,.png" required>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit">Ajukan Akta Perceraian</button>
+        </form>
+    </div>
+</body>
+</html>
