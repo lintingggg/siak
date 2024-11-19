@@ -6,56 +6,88 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Query untuk mencari pengguna berdasarkan email dan password
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND password = ?");
-    $stmt->bind_param("ss", $email, $password);
+    // Query untuk mencari pengguna berdasarkan email
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
 
-        // Cek apakah pengguna aktif
-        if ($user['status_aktif'] == 1) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['nama_lengkap'];
-            $_SESSION['email'] = $user['email'];
-            $_SESSION['role'] = $user['role'];
+        // Verifikasi password
+        if ($password == $user['password']) {
+            // Cek apakah pengguna aktif
+            if ($user['status_aktif'] == 1) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $user['nama_lengkap'];
+                $_SESSION['email'] = $user['email'];
+                $_SESSION['role'] = $user['role'];
 
-            // Jika login berhasil
-            echo "<script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Login Berhasil',
-                        text: 'Selamat datang, " . $user['nama_lengkap'] . "!',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        window.location.href = 'user/dashboard.html';
+                // Jika login berhasil, cek role
+                if ($user['role'] == 'admin') {
+                    echo "<script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Login Berhasil',
+                                text: 'Selamat datang, Admin " . $user['nama_lengkap'] . "!',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                window.location.href = 'admin/dashboard.php';
+                            });
+                        });
+                    </script>";
+                } else {
+                    echo "<script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Login Berhasil',
+                                text: 'Selamat datang, " . $user['nama_lengkap'] . "!',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                window.location.href = 'user/dashboard.html';
+                            });
+                        });
+                    </script>";
+                }
+            } else {
+                // Jika akun tidak aktif
+                echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Akun Tidak Aktif',
+                            text: 'Silakan hubungi admin.',
+                            confirmButtonText: 'OK'
+                        });
                     });
-                });
-            </script>";
+                </script>";
+            }
         } else {
-            // Jika akun tidak aktif
+            // Jika password salah
             echo "<script>
                 document.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
-                        icon: 'warning',
-                        title: 'Akun Tidak Aktif',
-                        text: 'Silakan hubungi admin.',
-                        confirmButtonText: 'OK'
+                        icon: 'error',
+                        title: 'Login Gagal',
+                        text: 'Password salah!',
+                        confirmButtonText: 'Coba Lagi'
+                    }).then(() => {
+                        window.location.href = 'login.php';
                     });
                 });
             </script>";
         }
     } else {
-        // Jika email atau password salah
+        // Jika email tidak ditemukan
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'error',
                     title: 'Login Gagal',
-                    text: 'Email atau password salah!',
+                    text: 'Email tidak ditemukan!',
                     confirmButtonText: 'Coba Lagi'
                 }).then(() => {
                     window.location.href = 'login.php';
@@ -67,6 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $conn->close();
 }
 ?>
+
 
 
 
