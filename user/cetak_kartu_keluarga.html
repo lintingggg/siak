@@ -46,45 +46,33 @@
         button:hover {
             background-color: #45a049;
         }
-        .add-member {
+        .add-button {
             background-color: #007BFF;
-            color: white;
+            margin-top: 10px;
         }
-        .add-member:hover {
+        .add-button:hover {
             background-color: #0056b3;
         }
     </style>
     <script>
-        function addFamilyMember() {
-            const familyMembersContainer = document.getElementById('family-members');
-            const memberIndex = familyMembersContainer.children.length + 1;
+        function addChildCertificate() {
+            const container = document.getElementById('child-certificates');
+            const childIndex = container.children.length;
 
-            const memberDiv = document.createElement('div');
-            memberDiv.className = 'form-group';
-            memberDiv.innerHTML = `
-                <h4>Anggota Keluarga ${memberIndex}</h4>
-                <label for="nama-anggota-${memberIndex}">Nama:</label>
-                <input type="text" id="nama-anggota-${memberIndex}" name="nama_anggota[]" required>
-                
-                <label for="nik-anggota-${memberIndex}">NIK:</label>
-                <input type="text" id="nik-anggota-${memberIndex}" name="nik_anggota[]" required>
-                
-                <label for="hubungan-${memberIndex}">Hubungan:</label>
-                <select id="hubungan-${memberIndex}" name="hubungan[]" required>
-                    <option value="Suami">Suami</option>
-                    <option value="Istri">Istri</option>
-                    <option value="Anak">Anak</option>
-                    <option value="Lainnya">Lainnya</option>
-                </select>
+            const newDiv = document.createElement('div');
+            newDiv.className = 'form-group';
+            newDiv.innerHTML = `
+                <label for="akte-anak-${childIndex}">Upload Akte Anak ${childIndex}:</label>
+                <input type="file" id="akte-anak-${childIndex}" name="akte_anak[]" accept="image/*,application/pdf">
             `;
-            familyMembersContainer.appendChild(memberDiv);
+            container.appendChild(newDiv);
         }
     </script>
 </head>
 <body>
     <div class="container">
         <h2>Form Pembuatan Kartu Keluarga</h2>
-        <form action="/submit-kartu-keluarga" method="post">
+        <form action="/submit-kartu-keluarga" method="post" enctype="multipart/form-data">
             <!-- Informasi Kepala Keluarga -->
             <div class="form-group">
                 <label for="nama-kepala">Nama Kepala Keluarga:</label>
@@ -117,29 +105,51 @@
                 <input type="text" id="kelurahan" name="kelurahan" required>
             </div>
 
-            <!-- Anggota Keluarga -->
-            <div id="family-members">
+            <!-- Informasi Istri -->
+            <div class="form-group">
+                <h4>Informasi Istri</h4>
+                <label for="nama-istri">Nama Istri:</label>
+                <input type="text" id="nama-istri" name="nama_istri" required>
+
+                <label for="nik-istri">NIK Istri:</label>
+                <input type="text" id="nik-istri" name="nik_istri" required>
+
+                <label for="tempat-lahir-istri">Tempat Lahir:</label>
+                <input type="text" id="tempat-lahir-istri" name="tempat_lahir_istri" required>
+
+                <label for="tanggal-lahir-istri">Tanggal Lahir:</label>
+                <input type="date" id="tanggal-lahir-istri" name="tanggal_lahir_istri" required>
+            </div>
+
+            <!-- Dokumen Persyaratan -->
+            <div class="form-group">
+                <label for="buku-nikah">Upload Buku Nikah:</label>
+                <input type="file" id="buku-nikah" name="buku_nikah" accept="image/*,application/pdf" required>
+            </div>
+            <div class="form-group">
+                <label for="ktp">Upload KTP Kepala Keluarga:</label>
+                <input type="file" id="ktp" name="ktp" accept="image/*,application/pdf" required>
+            </div>
+            <div class="form-group">
+                <label for="kk-sebelumnya">Upload KK Sebelumnya Kepala Keluarga:</label>
+                <input type="file" id="kk-sebelumnya" name="kk_sebelumnya" accept="image/*,application/pdf" required>
+            </div>
+            <div class="form-group">
+                <label for="kk-istri">Upload KK Sebelumnya Istri:</label>
+                <input type="file" id="kk-istri" name="kk_istri" accept="image/*,application/pdf">
+            </div>
+
+            <!-- Akte Anak -->
+            <div id="child-certificates">
+                <h4>Upload Akte Kelahiran Anak (Opsional)</h4>
                 <div class="form-group">
-                    <h4>Anggota Keluarga 1</h4>
-                    <label for="nama-anggota-1">Nama:</label>
-                    <input type="text" id="nama-anggota-1" name="nama_anggota[]" required>
-                    
-                    <label for="nik-anggota-1">NIK:</label>
-                    <input type="text" id="nik-anggota-1" name="nik_anggota[]" required>
-                    
-                    <label for="hubungan-1">Hubungan:</label>
-                    <select id="hubungan-1" name="hubungan[]" required>
-                        <option value="Suami">Suami</option>
-                        <option value="Istri">Istri</option>
-                        <option value="Anak">Anak</option>
-                        <option value="Lainnya">Lainnya</option>
-                    </select>
+                    <label for="akte-anak-1">Upload Akte Anak 1:</label>
+                    <input type="file" id="akte-anak-1" name="akte_anak[]" accept="image/*,application/pdf">
                 </div>
             </div>
-            <button type="button" class="add-member" onclick="addFamilyMember()">Tambah Anggota Keluarga</button>
-            
-            <!-- Submit -->
-            <button type="submit">Ajukan Kartu Keluarga</button>
+            <button type="button" class="add-button" onclick="addChildCertificate()">Tambah Akte Anak</button>
+
+            <button type="submit">Submit</button>
         </form>
     </div>
 </body>

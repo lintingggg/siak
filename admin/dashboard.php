@@ -91,16 +91,16 @@ function fetchData($conn, $table)
                         </a>
                     </nav>
                 </div>
-                <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#sirkulasiPenduduk" role="button" aria-expanded="false" aria-controls="sirkulasiPenduduk">
-                    <i class="bi bi-gear me-2"></i> Sirkulasi Penduduk
+                <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#Request" role="button" aria-expanded="false" aria-controls="sirkulasiPenduduk">
+                    <i class="bi bi-gear me-2"></i> Regist Akun
                 </a>
-                <div class="collapse" id="sirkulasiPenduduk">
+                <div class="collapse" id="Request">
                     <nav class="nav flex-column submenu">
                         <a href="#" class="nav-link">
-                            <i class="bi bi-circle me-2"></i> Data Lahir
+                            <i class="bi bi-circle me-2"></i> Permintaan Regist
                         </a>
                         <a href="#" class="nav-link">
-                            <i class="bi bi-circle me-2"></i> Data Meninggal
+                            <i class="bi bi-circle me-2"></i> Akun Aktif
                         </a>
                     </nav>
                 </div>
