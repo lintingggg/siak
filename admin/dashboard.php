@@ -1,21 +1,26 @@
 <?php
-// Koneksi ke database
-$conn = new mysqli("localhost", "root", "", "siak_db");
+session_start();
+include '../config/connection.php'; // Koneksi database
 
-// Cek koneksi
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
+// Periksa apakah admin sudah login
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    echo "<script>
+        alert('Akses ditolak! Anda harus login sebagai admin.');
+        window.location.href = '../login.php';
+    </script>";
+    exit();
 }
 
-// Fungsi untuk mengambil data tabel
-function fetchData($conn, $table)
+// Fungsi untuk mengambil data tabel secara aman
+function fetchData($conn, $query)
 {
-    $result = $conn->query("SELECT * FROM $table");
-    return $result;
+    $stmt = $conn->prepare($query);
+    $stmt->execute();
+    return $stmt->get_result();
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,44 +28,12 @@ function fetchData($conn, $table)
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        .sidebar {
-            height: 100vh;
-            background-color: #343a40;
-            color: white;
-            padding-top: 20px;
-        }
-
-        .sidebar .nav-link {
-            color: #ddd;
-            font-size: 14px;
-        }
-
-        .sidebar .nav-link.active {
-            background-color: #495057;
-            color: white;
-        }
-
-        .submenu {
-            padding-left: 20px;
-        }
-
-        .header {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .card-icon {
-            font-size: 40px;
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            opacity: 0.2;
-        }
-
-        .table-container {
-            margin-top: 20px;
-        }
+        .sidebar { height: 100vh; background-color: #343a40; color: white; padding-top: 20px; }
+        .sidebar .nav-link { color: #ddd; font-size: 14px; }
+        .sidebar .nav-link.active { background-color: #495057; color: white; }
+        .submenu { padding-left: 20px; }
+        .header { background-color: #f8f9fa; padding: 15px; border-bottom: 1px solid #ddd; }
+        .table-container { margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -70,137 +43,67 @@ function fetchData($conn, $table)
             <div class="d-flex align-items-center mb-4">
                 <img src="https://via.placeholder.com/40" alt="Admin" class="rounded-circle me-2">
                 <div>
-                    <strong>Brodo</strong>
+                    <strong><?php echo $_SESSION['username']; ?></strong>
                     <span class="badge bg-success">Administrator</span>
                 </div>
             </div>
             <nav class="nav flex-column">
-                <a href="?" class="nav-link active">
+                <a href="?" class="nav-link <?php echo !isset($_GET['page']) ? 'active' : ''; ?>">
                     <i class="bi bi-speedometer2 me-2"></i> Dashboard
                 </a>
-                <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#kelolaData" role="button" aria-expanded="false" aria-controls="kelolaData">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#kelolaData" role="button"
+                   aria-expanded="false" aria-controls="kelolaData">
                     <i class="bi bi-grid me-2"></i> Kelola Data
                 </a>
-                <div class="collapse" id="kelolaData">
+                <div class="collapse <?php echo isset($_GET['page']) && in_array($_GET['page'], ['dataPenduduk', 'dataKK']) ? 'show' : ''; ?>" id="kelolaData">
                     <nav class="nav flex-column submenu">
-                        <a href="?page=dataPenduduk" class="nav-link">
+                        <a href="?page=dataPenduduk" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] == 'dataPenduduk' ? 'active' : ''; ?>">
                             <i class="bi bi-circle me-2"></i> Data Penduduk
                         </a>
-                        <a href="?page=dataKK" class="nav-link">
-                            <i class="bi bi-circle me-2"></i> Data Kartu Keluarga
+                        <a href="?page=dataKK" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] == 'dataKK' ? 'active' : ''; ?>">
+                            <i class="bi bi-circle me-2"></i> Data KK
                         </a>
                     </nav>
                 </div>
-                <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#Request" role="button" aria-expanded="false" aria-controls="sirkulasiPenduduk">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#Request" role="button"
+                   aria-expanded="false" aria-controls="Request">
                     <i class="bi bi-gear me-2"></i> Regist Akun
                 </a>
-                <div class="collapse" id="Request">
+                <div class="collapse <?php echo isset($_GET['page']) && in_array($_GET['page'], ['permintaanRegis', 'data_akun']) ? 'show' : ''; ?>" id="Request">
                     <nav class="nav flex-column submenu">
-                        <a href="#" class="nav-link">
+                        <a href="?page=permintaanRegis" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] == 'permintaanRegis' ? 'active' : ''; ?>">
                             <i class="bi bi-circle me-2"></i> Permintaan Regist
                         </a>
-                        <a href="#" class="nav-link">
+                        <a href="?page=data_akun" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] == 'data_akun' ? 'active' : ''; ?>">
                             <i class="bi bi-circle me-2"></i> Akun Aktif
                         </a>
                     </nav>
                 </div>
                 <hr>
-                <a href="#" class="nav-link">
-                    <i class="bi bi-person-circle me-2"></i> Pengguna Sistem
-                </a>
-                <a href="#" class="nav-link">
-                    <i class="bi bi-box-arrow-right me-2"></i> Logout
-                </a>
+                <a href="../login.php" class="nav-link"><i class="bi bi-box-arrow-right me-2"></i> Logout</a>
             </nav>
         </div>
 
         <!-- Main Content -->
         <div class="flex-grow-1">
-            <!-- Header -->
-            <div class="header">
-                <h5 class="mb-0">Sistem Informasi Administrasi Kependudukan</h5>
-            </div>
-
-            <!-- Content -->
+            <div class="header"><h5 class="mb-0">Sistem Informasi Administrasi Kependudukan</h5></div>
             <div class="container my-4">
                 <?php
-                // Menentukan halaman yang akan ditampilkan
                 if (isset($_GET['page'])) {
                     $page = $_GET['page'];
+
                     if ($page == 'dataPenduduk') {
-                        // Menampilkan tabel data penduduk
-                        $data = fetchData($conn, "data_penduduk");
-                        echo '<div class="table-container">';
-                        echo '<h5>Data Penduduk</h5>';
-                        echo '<table class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama</th>
-                                        <th>NIK</th>
-                                        <th>Alamat</th>
-                                        <th>Jenis Kelamin</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>';
-                        if ($data->num_rows > 0) {
-                            $no = 1;
-                            while ($row = $data->fetch_assoc()) {
-                                echo "<tr>
-                                        <td>$no</td>
-                                        <td>{$row['nama']}</td>
-                                        <td>{$row['nik']}</td>
-                                        <td>{$row['alamat']}</td>
-                                        <td>{$row['jenis_kelamin']}</td>
-                                        <td>
-                                            <button class='btn btn-primary btn-sm'>Edit</button>
-                                            <button class='btn btn-danger btn-sm'>Hapus</button>
-                                        </td>
-                                    </tr>";
-                                $no++;
-                            }
-                        } else {
-                            echo '<tr><td colspan="6" class="text-center">Tidak ada data</td></tr>';
-                        }
-                        echo '</tbody></table>';
-                        echo '</div>';
+                        $data = fetchData($conn, "SELECT * FROM data_penduduk");
+                        include "pages/data_penduduk.php";
                     } elseif ($page == 'dataKK') {
-                        // Menampilkan tabel data kartu keluarga
-                        $data = fetchData($conn, "data_kk");
-                        echo '<div class="table-container">';
-                        echo '<h5>Data Kartu Keluarga</h5>';
-                        echo '<table class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>No KK</th>
-                                        <th>Kepala Keluarga</th>
-                                        <th>Alamat</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>';
-                        if ($data->num_rows > 0) {
-                            $no = 1;
-                            while ($row = $data->fetch_assoc()) {
-                                echo "<tr>
-                                        <td>$no</td>
-                                        <td>{$row['no_kk']}</td>
-                                        <td>{$row['kepala_keluarga']}</td>
-                                        <td>{$row['alamat']}</td>
-                                        <td>
-                                            <button class='btn btn-primary btn-sm'>Edit</button>
-                                            <button class='btn btn-danger btn-sm'>Hapus</button>
-                                        </td>
-                                    </tr>";
-                                $no++;
-                            }
-                        } else {
-                            echo '<tr><td colspan="5" class="text-center">Tidak ada data</td></tr>';
-                        }
-                        echo '</tbody></table>';
-                        echo '</div>';
+                        $data = fetchData($conn, "SELECT * FROM data_kk");
+                        include "pages/data_kk.php";
+                    } elseif ($page == 'permintaanRegis') {
+                        $data = fetchData($conn, "SELECT id, nama_lengkap, email, role, status FROM users WHERE status = 'pending'");
+                        include "pages/permintaan_regis.php";
+                    } elseif ($page == 'data_akun') {
+                        $data = fetchData($conn, "SELECT id, nama_lengkap, email, role, status FROM users WHERE status IN ('approved', 'rejected')");
+                        include "pages/data_akun.php";
                     } else {
                         echo '<p class="text-center">Halaman tidak ditemukan.</p>';
                     }
@@ -212,7 +115,6 @@ function fetchData($conn, $table)
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -72,7 +72,64 @@
 <body>
     <div class="container">
         <h2>Form Pembuatan Kartu Keluarga</h2>
-        <form action="/submit-kartu-keluarga" method="post" enctype="multipart/form-data">
+        <?php
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Ambil data dari form
+    $nama_kepala = $_POST['nama_kepala'];
+    $nik_kepala = $_POST['nik_kepala'];
+    $alamat = $_POST['alamat'];
+    $rt = $_POST['rt'];
+    $rw = $_POST['rw'];
+    $kecamatan = $_POST['kecamatan'];
+    $kelurahan = $_POST['kelurahan'];
+    $nama_istri = $_POST['nama_istri'];
+    $nik_istri = $_POST['nik_istri'];
+    $tempat_lahir_istri = $_POST['tempat_lahir_istri'];
+    $tanggal_lahir_istri = $_POST['tanggal_lahir_istri'];
+
+    // Tentukan direktori upload
+    $uploadDir = 'uploads/';
+
+    // Buat folder jika belum ada
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    // Proses file 'Buku Nikah' jika ada
+    if (isset($_FILES['buku_nikah']) && $_FILES['buku_nikah']['error'] == 0) {
+        $buku_nikah = $_FILES['buku_nikah'];
+        $bukuNikahPath = $uploadDir . basename($buku_nikah['name']);
+
+        // Pindahkan file ke folder uploads
+        if (move_uploaded_file($buku_nikah['tmp_name'], $bukuNikahPath)) {
+            echo "<p>Buku Nikah berhasil diunggah: {$buku_nikah['name']}</p>";
+        } else {
+            echo "<p>Gagal mengunggah Buku Nikah.</p>";
+        }
+    }
+
+    // Proses setiap file akte anak jika ada
+    if (isset($_FILES['akte_anak']) && !empty($_FILES['akte_anak']['name'][0])) {
+        foreach ($_FILES['akte_anak']['name'] as $index => $fileName) {
+            if ($_FILES['akte_anak']['error'][$index] == 0) {
+                $akteAnakPath = $uploadDir . basename($fileName);
+
+                // Pindahkan file ke folder uploads
+                if (move_uploaded_file($_FILES['akte_anak']['tmp_name'][$index], $akteAnakPath)) {
+                    echo "<p>Akte Anak " . ($index + 1) . " berhasil diunggah: $fileName</p>";
+                } else {
+                    echo "<p>Gagal mengunggah Akte Anak " . ($index + 1) . "</p>";
+                }
+            }
+        }
+    }
+
+    // Tampilkan pesan berhasil
+    echo "<p>Data berhasil disimpan.</p>";
+}
+?>
+
+        <form action="proses_kartu_keluarga.php" method="post" enctype="multipart/form-data">
             <!-- Informasi Kepala Keluarga -->
             <div class="form-group">
                 <label for="nama-kepala">Nama Kepala Keluarga:</label>
@@ -113,30 +170,12 @@
 
                 <label for="nik-istri">NIK Istri:</label>
                 <input type="text" id="nik-istri" name="nik_istri" required>
-
-                <label for="tempat-lahir-istri">Tempat Lahir:</label>
-                <input type="text" id="tempat-lahir-istri" name="tempat_lahir_istri" required>
-
-                <label for="tanggal-lahir-istri">Tanggal Lahir:</label>
-                <input type="date" id="tanggal-lahir-istri" name="tanggal_lahir_istri" required>
             </div>
 
             <!-- Dokumen Persyaratan -->
             <div class="form-group">
                 <label for="buku-nikah">Upload Buku Nikah:</label>
                 <input type="file" id="buku-nikah" name="buku_nikah" accept="image/*,application/pdf" required>
-            </div>
-            <div class="form-group">
-                <label for="ktp">Upload KTP Kepala Keluarga:</label>
-                <input type="file" id="ktp" name="ktp" accept="image/*,application/pdf" required>
-            </div>
-            <div class="form-group">
-                <label for="kk-sebelumnya">Upload KK Sebelumnya Kepala Keluarga:</label>
-                <input type="file" id="kk-sebelumnya" name="kk_sebelumnya" accept="image/*,application/pdf" required>
-            </div>
-            <div class="form-group">
-                <label for="kk-istri">Upload KK Sebelumnya Istri:</label>
-                <input type="file" id="kk-istri" name="kk_istri" accept="image/*,application/pdf">
             </div>
 
             <!-- Akte Anak -->
@@ -148,7 +187,6 @@
                 </div>
             </div>
             <button type="button" class="add-button" onclick="addChildCertificate()">Tambah Akte Anak</button>
-
             <button type="submit">Submit</button>
         </form>
     </div>

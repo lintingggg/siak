@@ -15,17 +15,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
 
-        // Verifikasi password
-        if ($password == $user['password']) {
-            // Cek apakah pengguna aktif
-            if ($user['status_aktif'] == 1) {
+        // Verifikasi password langsung (TANPA HASH)
+        if ($password === $user['password']) {
+            // Cek status akun
+            if ($user['status'] === 'approved') {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['nama_lengkap'];
                 $_SESSION['email'] = $user['email'];
                 $_SESSION['role'] = $user['role'];
+                $_SESSION['foto_ktp'] = $user['foto_ktp'];
+                $_SESSION['foto_diri_ktp'] = $user['foto_diri_ktp'];
 
-                // Jika login berhasil, cek role
-                if ($user['role'] == 'admin') {
+                // Jika login berhasil, cek role (admin atau user)
+                if ($_SESSION['role'] === 'admin') {
                     echo "<script>
                         document.addEventListener('DOMContentLoaded', function() {
                             Swal.fire({
@@ -52,14 +54,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         });
                     </script>";
                 }
-            } else {
-                // Jika akun tidak aktif
+            } elseif ($user['status'] === 'pending') {
                 echo "<script>
                     document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
-                            icon: 'warning',
-                            title: 'Akun Tidak Aktif',
-                            text: 'Silakan hubungi admin.',
+                            icon: 'info',
+                            title: 'Akun Belum Disetujui',
+                            text: 'Akun Anda sedang menunggu persetujuan admin.',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+                </script>";
+            } elseif ($user['status'] === 'rejected') {
+                echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Akun Ditolak',
+                            text: 'Akun Anda telah ditolak. Silakan hubungi admin.',
                             confirmButtonText: 'OK'
                         });
                     });
@@ -95,56 +107,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             });
         </script>";
     }
+
     $stmt->close();
     $conn->close();
 }
 ?>
 
-
-
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="src\css/login.css">
-    <!-- Tambahkan link SweetAlert -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-<div class="login-box">
-    <div class="login-header">
-        <header>Login</header>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Login</h3>
+                </div>
+                <div class="card-body">
+                    <form action="login.php" method="POST">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember_me">
+                            <label class="form-check-label" for="remember_me">Remember me</label>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <p>Belum punya akun? <a href="register.php" class="text-decoration-none">Register</a></p>
+                </div>
+            </div>
+        </div>
     </div>
-    <form action="login.php" method="POST">
-        <div class="input-box">
-            <input type="email" name="email" class="input-field" required autocomplete="off">
-            <label for="email">Email</label>
-        </div>
-        <div class="input-box">
-            <input type="password" name="password" class="input-field" required autocomplete="off">
-            <label for="password">Password</label>
-        </div>
-        <div class="forgot">
-            <section>
-                <input type="checkbox" id="check">
-                <label for="check">Remember me</label>
-            </section>
-            <section>
-                <a href="forgot-password.php" class="forgot-link">Forgot password?</a>
-            </section>
-        </div>
-        <div class="input-box">
-            <input type="submit" class="input-submit" value="Login">
-        </div>
-        <div class="sign-up">
-            <p>Don't have an account? <a href="register.php">Sign up</a></p>
-        </div>
-    </form>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-

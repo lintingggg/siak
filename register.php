@@ -2,167 +2,127 @@
 include 'config/connection.php'; // Koneksi database
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = htmlspecialchars($_POST['nama_lengkap']);
+    $nama_lengkap = htmlspecialchars($_POST['nama_lengkap']);
     $nik = htmlspecialchars($_POST['nik']);
     $email = htmlspecialchars($_POST['email']);
-    $no_telepon = htmlspecialchars($_POST['no_telepon']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
-    // Validasi apakah password dan confirm password sama
+    // Validasi password
     if ($password !== $confirm_password) {
         echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Registrasi Gagal',
-                    text: 'Password tidak cocok!',
-                    confirmButtonText: 'Coba Lagi'
-                }).then(() => {
-                    window.location.href = 'register.php';
-                });
-            });
+            alert('Password dan konfirmasi password tidak cocok!');
+            window.location.href = 'register.php';
         </script>";
         exit();
     }
 
-    // Periksa apakah email sudah terdaftar
-    $checkEmail = $conn->prepare("SELECT * FROM users WHERE email = ?");
-    $checkEmail->bind_param("s", $email);
-    $checkEmail->execute();
-    $result = $checkEmail->get_result();
+    // Upload file
+    $foto_ktp = $_FILES['foto_ktp'];
+    $foto_diri = $_FILES['foto_diri'];
+
+    $foto_ktp_path = "uploads/ktp_" . time() . "_" . basename($foto_ktp['name']);
+    $foto_diri_path = "uploads/diri_" . time() . "_" . basename($foto_diri['name']);
+
+    move_uploaded_file($foto_ktp['tmp_name'], $foto_ktp_path);
+    move_uploaded_file($foto_diri['tmp_name'], $foto_diri_path);
+
+    // Periksa apakah email atau NIK sudah terdaftar
+    $checkQuery = $conn->prepare("SELECT * FROM users WHERE email = ? OR nik = ?");
+    $checkQuery->bind_param("ss", $email, $nik);
+    $checkQuery->execute();
+    $result = $checkQuery->get_result();
 
     if ($result->num_rows > 0) {
-        // Jika email sudah terdaftar
         echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Registrasi Gagal',
-                    text: 'Email sudah terdaftar!',
-                    confirmButtonText: 'Coba Lagi'
-                }).then(() => {
-                    window.location.href = 'register.php';
-                });
-            });
+            alert('Email atau NIK sudah terdaftar!');
+            window.location.href = 'register.php';
         </script>";
     } else {
-        // Simpan data pengguna baru
-        $stmt = $conn->prepare("INSERT INTO users (nik, nama_lengkap, email, no_telepon, password, role, status_aktif) VALUES (?, ?, ?, ?, ?, 'user', 1)");
-        $stmt->bind_param("sssss", $nik, $username, $email, $no_telepon, $password);
+        // Simpan data ke database dengan status PENDING
+        $stmt = $conn->prepare("INSERT INTO users (nama_lengkap, nik, email, password, foto_ktp, foto_diri_ktp, status) 
+                                 VALUES (?, ?, ?, ?, ?, ?, 'PENDING')");
+        $stmt->bind_param("ssssss", $nama_lengkap, $nik, $email, $password, $foto_ktp_path, $foto_diri_path);
 
         if ($stmt->execute()) {
-            // Jika registrasi berhasil
             echo "<script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Registrasi Berhasil',
-                        text: 'Akun Anda berhasil dibuat!',
-                        confirmButtonText: 'Login Sekarang'
-                    }).then(() => {
-                        window.location.href = 'login.php';
-                    });
-                });
+                alert('Registrasi berhasil! Harap tunggu persetujuan admin.');
+                window.location.href = 'login.php';
             </script>";
         } else {
-            // Jika registrasi gagal
             echo "<script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Registrasi Gagal',
-                        text: 'Terjadi kesalahan. Silakan coba lagi.',
-                        confirmButtonText: 'Coba Lagi'
-                    }).then(() => {
-                        window.location.href = 'register.php';
-                    });
-                });
+                alert('Terjadi kesalahan saat menyimpan data. Silakan coba lagi.');
+                window.location.href = 'register.php';
             </script>";
         }
     }
+
     $stmt->close();
     $conn->close();
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="stylesheet" href="src/css/register.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <!-- Tambahkan link SweetAlert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Link Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <form action="register.php" method="POST">
-        <div class="register-box">
-            <div class="register-header">
-                <header>Register</header>
-            </div>
-            <div class="input-box">
-                <input type="text" name="nama_lengkap" class="input-field" required autocomplete="off">
-                <label for="nama_lengkap">Nama Lengkap</label>
-            </div>
-            <div class="input-box">
-                <input type="number" name="nik" class="input-field" required autocomplete="off">
-                <label for="nik">NIK</label>
-            </div>
-            <div class="input-box">
-                <input type="email" name="email" class="input-field" required autocomplete="off">
-                <label for="email">Email</label>
-            </div>
-            <div class="input-box">
-                <input type="text" name="no_telepon" class="input-field" required autocomplete="off">
-                <label for="no_telepon">No Telepon</label>
-            </div>
-            <div class="input-box">
-                <input type="password" id="password" name="password" class="input-field" required autocomplete="off">
-                <label for="password">Password</label>
-                <span class="toggle-password" onclick="togglePasswordVisibility('password')"><i class="fa-regular fa-eye"></i></span>
-            </div>
-            <div class="input-box">
-                <input type="password" id="confirm_password" name="confirm_password" class="input-field" required autocomplete="off">
-                <label for="confirm_password">Confirm Password</label>
-                <span class="toggle-password" onclick="togglePasswordVisibility('confirm_password')"><i class="fa-regular fa-eye"></i></span>
-            </div>
-            <div class="input-box">
-                <input type="submit" class="input-submit" value="Register">
-            </div>
-            <div class="sign-up">
-                <p>Sudah punya akun? <a href="login.php">Login</a></p>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3>Register</h3>
+                    </div>
+                    <div class="card-body">
+                        <form action="register.php" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="nama_lengkap" class="form-label">Nama Lengkap</label>
+                                <input type="text" name="nama_lengkap" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nik" class="form-label">NIK</label>
+                                <input type="text" name="nik" class="form-control" maxlength="16" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" name="password" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirm_password" class="form-label">Konfirmasi Password</label>
+                                <input type="password" name="confirm_password" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="foto_ktp" class="form-label">Upload Foto KTP</label>
+                                <input type="file" name="foto_ktp" class="form-control" accept="image/*" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="foto_diri" class="form-label">Upload Foto Diri dengan KTP</label>
+                                <input type="file" name="foto_diri" class="form-control" accept="image/*" required>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Register</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer text-center">
+                        <p>Sudah punya akun? <a href="login.php" class="text-decoration-none">Login</a></p>
+                    </div>
+                </div>
             </div>
         </div>
-    </form>
+    </div>
 
-    <!-- Validasi form menggunakan SweetAlert -->
-    <script>
-    document.querySelector('form').addEventListener('submit', function (event) {
-        const password = document.querySelector('input[name="password"]').value;
-        const confirmPassword = document.querySelector('input[name="confirm_password"]').value;
-
-        if (password !== confirmPassword) {
-            event.preventDefault(); // Mencegah form terkirim
-            Swal.fire({
-                icon: 'error',
-                title: 'Password Tidak Cocok',
-                text: 'Harap pastikan password dan konfirmasi password sama!',
-                confirmButtonText: 'Coba Lagi'
-            });
-        }
-    });
-    function togglePasswordVisibility(inputId) {
-        const passwordField = document.getElementById(inputId);
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-        } else {
-            passwordField.type = 'password';
-        }
-    }
-    </script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
