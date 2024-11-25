@@ -22,15 +22,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $conn->begin_transaction();
 
     try {
-        // Masukkan data ke tabel kartu_keluarga
+        // Masukkan data ke tabel kartu_keluarga dengan status 'pending'
         $stmt = $conn->prepare("
             INSERT INTO kartu_keluarga 
-            (nama_kepala, nik_kepala, alamat, rt, rw, kecamatan, kelurahan, nama_istri, nik_istri, buku_nikah) 
+            (nama_kepala, nik_kepala, alamat, rt, rw, kecamatan, kelurahan, nama_istri, nik_istri, buku_nikah, status) 
             VALUES 
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
+        $status = 'pending'; // Set default status to 'pending'
         $stmt->bind_param(
-            "ssssssssss", 
+            "sssssssssss", 
             $nama_kepala, 
             $nik_kepala, 
             $alamat, 
@@ -40,7 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $kelurahan, 
             $nama_istri, 
             $nik_istri, 
-            $bukuNikahPath
+            $bukuNikahPath,
+            $status
         );
         $stmt->execute();
 
