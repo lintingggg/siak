@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 text: 'Selamat datang, " . $user['nama_lengkap'] . "!',
                                 confirmButtonText: 'OK'
                             }).then(() => {
-                                window.location.href = 'user/dashboard.html';
+                                window.location.href = 'user/dashboard.php';
                             });
                         });
                     </script>";

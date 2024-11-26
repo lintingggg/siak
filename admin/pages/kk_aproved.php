@@ -13,22 +13,21 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
-// Query untuk mengambil data permintaan dari tabel kartu_keluarga dengan status 'pending'
-$query = "SELECT id, nama_kepala, nik_kepala, alamat, status FROM kartu_keluarga WHERE status = 'pending'";
+// Query untuk mengambil data permintaan dari tabel kartu_keluarga dengan status 'approved' atau 'rejected'
+$query = "SELECT id, nama_kepala, nik_kepala, alamat, status FROM kartu_keluarga WHERE status = 'approved' OR status = 'rejected'";
 $data = $conn->query($query);
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Permintaan Kartu Keluarga</title>
+    <title>Data Kartu Keluarga</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container my-4">
-    <h5>Permintaan Kartu Keluarga</h5>
+    <h5>Data Kartu Keluarga yang Disetujui atau Ditolak</h5>
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
@@ -52,18 +51,22 @@ $data = $conn->query($query);
                             <td>{$row['alamat']}</td>
                             <td>{$row['status']}</td>
                             <td>
+                                <!-- Tombol Hapus -->
                                 <form action='user_action_kk.php' method='POST' style='display:inline-block;'>
                                     <input type='hidden' name='kartu_keluarga_id' value='{$row['id']}'>
-                                    <button type='submit' class='btn btn-success btn-sm' name='action' value='approve'>Approve</button>
-                                    <button type='submit' class='btn btn-danger btn-sm' name='action' value='reject'>Reject</button>
+                                    <button type='submit' class='btn btn-danger btn-sm' name='action' value='delete'>Hapus</button>
                                 </form>
-                                <a href='detail_kartu_keluarga.php?id={$row['id']}' class='btn btn-info btn-sm'>Detail</a>
+                                <!-- Tombol Selesai -->
+                                <form action='user_action_kk.php' method='POST' style='display:inline-block;'>
+                                    <input type='hidden' name='kartu_keluarga_id' value='{$row['id']}'>
+                                    <button type='submit' class='btn btn-success btn-sm' name='action' value='selesai'>Selesai</button>
+                                </form>
                             </td>
                         </tr>";
                     $no++;
                 }
             } else {
-                echo '<tr><td colspan="6" class="text-center">Tidak ada permintaan kartu keluarga yang statusnya pending.</td></tr>';
+                echo '<tr><td colspan="6" class="text-center">Tidak ada data kartu keluarga yang disetujui atau ditolak.</td></tr>';
             }
             ?>
         </tbody>

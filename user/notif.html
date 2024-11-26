@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Status Progres Pengajuan KK</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .progress-container {
+        margin-top: 50px;
+        max-width: 600px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .progress-title {
+        font-weight: bold;
+        color: #333;
+    }
+    .status-alert {
+        font-size: 16px;
+    }
+    .progress-bar {
+        font-weight: bold;
+    }
+    .btn-back {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container d-flex justify-content-center">
+    <div class="progress-container p-4">
+      <h1 class="text-center mb-4">Progres Pengajuan Kartu Keluarga</h1>
+      
+      <!-- Progress Bar -->
+      <div class="mb-3">
+        <h5 class="progress-title">Status Progres</h5>
+        <div class="progress">
+          <div 
+            class="progress-bar bg-warning" 
+            role="progressbar" 
+            style="width: 50%;" 
+            aria-valuenow="50" 
+            aria-valuemin="0" 
+            aria-valuemax="100">
+            50% - Pending
+          </div>
+        </div>
+      </div>
+      
+      <!-- Notifikasi Status -->
+      <div class="alert alert-info status-alert text-center" role="alert">
+        <strong>Status:</strong> Menunggu persetujuan admin.
+      </div>
+
+      <!-- Informasi Tambahan -->
+      <div class="card border-info">
+        <div class="card-body">
+          <h5 class="card-title text-info">Informasi Penting</h5>
+          <p class="card-text">
+            Jika pengajuan Anda disetujui, Anda akan menerima notifikasi lebih lanjut.
+            Pastikan semua data yang diisi sudah benar untuk mempercepat proses pengajuan.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Tombol Navigasi -->
+      <div class="btn-back">
+        <a href="dashboard.php" class="btn btn-primary btn-lg">Kembali ke Form Pengajuan</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

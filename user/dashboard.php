@@ -1,3 +1,24 @@
+<?php
+session_start();
+
+// Periksa apakah user sudah login
+if (!isset($_SESSION['user_id'])) {
+    echo "<script>
+        alert('Silakan login terlebih dahulu.');
+        window.location.href = 'login.php';
+    </script>";
+    exit();
+}
+
+// Ambil data session
+$user_id = $_SESSION['user_id'];
+$username = $_SESSION['username']; // Jika ingin menampilkan nama pengguna
+
+// Cek nilai id_user
+echo "ID User dari session: " . $user_id . "<br>";
+echo "Nama User dari session: " . $username . "<br>";
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +46,7 @@
                         <a class="nav-link" href="#"><i class="fa-solid fa-list" style="color: #74C0FC;"></i> Permohonan</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="notif.html"><i class="fa-regular fa-bell" style="color: #74C0FC;"></i> Notifikasi</a>
+                        <a class="nav-link" href="notif.php"><i class="fa-regular fa-bell" style="color: #74C0FC;"></i> Notifikasi</a>
                     </li>
                 </ul>
                 <div class="nav-item ms-auto">

@@ -80,9 +80,9 @@ function fetchData($conn, $query)
                     </nav>
                 </div>
                 <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#Pengajuan" role="button" aria-expanded="false" aria-controls="Pengajuan"><i class="bi bi-file-earmark-plus me-2"></i> Pengajuan</a>
-                <div class="collapse <?php echo isset($_GET['page']) && in_array($_GET['page'], ['kartu_keluarga', 'data_pengajuan']) ? 'show' : ''; ?>" id="Pengajuan">
+                <div class="collapse <?php echo isset($_GET['page']) && in_array($_GET['page'], ['kk_aproved', 'data_pengajuan']) ? 'show' : ''; ?>" id="Pengajuan">
                     <nav class="nav flex-column submenu">
-                        <a href="?page=kartu_keluarga" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] == 'kartu_keluarga' ? 'active' : ''; ?>">
+                        <a href="?page=kk_aproved" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] == 'kk_aproved' ? 'active' : ''; ?>">
                             <i class="bi bi-circle me-2"></i> Kartu Keluarga
                         </a>
                         <a href="?page=data_pengajuan" class="nav-link <?php echo isset($_GET['page']) && $_GET['page'] == 'data_pengajuan' ? 'active' : ''; ?>">
@@ -119,7 +119,11 @@ function fetchData($conn, $query)
                     } elseif ($page == 'data_pengajuan') {
                         $data = fetchData($conn, "SELECT id, nama_kepala, nik_kepala, alamat, status FROM kartu_keluarga WHERE status = 'pending'");
                         include "pages/data_pengajuan.php";
-                    }else {
+                    } elseif ($page == 'kk_aproved') {
+                        $data = fetchData($conn, "SELECT id, nama_kepala, nik_kepala, alamat, status FROM kartu_keluarga WHERE status = 'approved'");
+                        include "pages/kk_aproved.php";
+                    }
+                    else {
                         echo '<p class="text-center">Halaman tidak ditemukan.</p>';
                     }
                 } else {

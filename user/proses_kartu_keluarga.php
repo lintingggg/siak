@@ -1,7 +1,20 @@
 <?php
+session_start();
 include '../config/connection.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Periksa apakah pengguna sudah login
+    if (!isset($_SESSION['user_id'])) {
+        echo "<script>
+            alert('Silakan login terlebih dahulu.');
+            window.location.href = '../login.php';
+        </script>";
+        exit();
+    }
+
+    // Ambil id_user dari session
+    $id_user = $_SESSION['user_id'];
+
     // Ambil data dari form
     $nama_kepala = $_POST['nama_kepala'];
     $nik_kepala = $_POST['nik_kepala'];
@@ -22,16 +35,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $conn->begin_transaction();
 
     try {
-        // Masukkan data ke tabel kartu_keluarga dengan status 'pending'
+        // Masukkan data ke tabel kartu_keluarga dengan foreign key id_user
         $stmt = $conn->prepare("
             INSERT INTO kartu_keluarga 
-            (nama_kepala, nik_kepala, alamat, rt, rw, kecamatan, kelurahan, nama_istri, nik_istri, buku_nikah, status) 
+            (id_user, nama_kepala, nik_kepala, alamat, rt, rw, kecamatan, kelurahan, nama_istri, nik_istri, buku_nikah, status) 
             VALUES 
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $status = 'pending'; // Set default status to 'pending'
         $stmt->bind_param(
-            "sssssssssss", 
+            "isssssssssss", 
+            $id_user, 
             $nama_kepala, 
             $nik_kepala, 
             $alamat, 
@@ -41,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $kelurahan, 
             $nama_istri, 
             $nik_istri, 
-            $bukuNikahPath,
+            $bukuNikahPath, 
             $status
         );
         $stmt->execute();

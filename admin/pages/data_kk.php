@@ -1,46 +1,65 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+include '../config/connection.php'; // Koneksi database
+
+// Periksa apakah admin sudah login
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    echo "<script>
+        alert('Akses ditolak! Anda harus login sebagai admin.');
+        window.location.href = '../login.php';
+    </script>";
+    exit();
+}
+
+// Query untuk mengambil data KK dengan status 'selesai'
+$query = "SELECT id, nama_kepala, nik_kepala, alamat, created_at FROM kartu_keluarga WHERE status = 'selesai'";
+$data = $conn->query($query);
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Data Kartu Keluarga Selesai</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="table-container">
-        <h5>Data Kartu Keluarga</h5>
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>No KK</th>
-                    <th>Kepala Keluarga</th>
-                    <th>Alamat</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                if ($data && $data->num_rows > 0) {
-                    $no = 1;
-                    while ($row = $data->fetch_assoc()) {
-                        echo "<tr>
-                                <td>$no</td>
-                                <td>{$row['no_kk']}</td>
-                                <td>{$row['kepala_keluarga']}</td>
-                                <td>{$row['alamat']}</td>
-                                <td>
-                                    <button class='btn btn-primary btn-sm'>Edit</button>
-                                    <button class='btn btn-danger btn-sm'>Hapus</button>
-                                </td>
-                            </tr>";
-                        $no++;
-                    }
-                } else {
-                    echo '<tr><td colspan="5" class="text-center">Tidak ada data</td></tr>';
+<div class="container my-4">
+    <h5>Data Kartu Keluarga yang Sudah Selesai</h5>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama Kepala Keluarga</th>
+                <th>NIK Kepala Keluarga</th>
+                <th>Alamat</th>
+                <th>Tanggal Selesai</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            if ($data && $data->num_rows > 0) {
+                $no = 1;
+                while ($row = $data->fetch_assoc()) {
+                    echo "<tr>
+                            <td>$no</td>
+                            <td>{$row['nama_kepala']}</td>
+                            <td>{$row['nik_kepala']}</td>
+                            <td>{$row['alamat']}</td>
+                            <td>{$row['created_at']}</td>
+                        </tr>";
+                    $no++;
                 }
-                ?>
-            </tbody>
-        </table>
-    </div>
+            } else {
+                echo '<tr><td colspan="6" class="text-center">Tidak ada data KK yang selesai.</td></tr>';
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
