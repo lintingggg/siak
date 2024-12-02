@@ -105,10 +105,22 @@ function fetchData($conn, $query)
                     $page = $_GET['page'];
 
                     if ($page == 'dataPenduduk') {
-                        $data = fetchData($conn, "SELECT * FROM data_penduduk");
+                        $data = fetchData($conn, "
+    SELECT 
+        p.nama_lengkap, 
+        p.nik, 
+        p.hubungan_keluarga, 
+        kk.nama_kepala AS kepala_keluarga 
+    FROM 
+        penduduk p
+    LEFT JOIN 
+        kartu_keluarga kk 
+    ON 
+        p.kk_id = kk.id;
+");
                         include "pages/data_penduduk.php";
                     } elseif ($page == 'dataKK') {
-                        $data = fetchData($conn, "SELECT * FROM data_kk");
+                        $data = fetchData($conn, "SELECT * FROM kartu_keluarga");
                         include "pages/data_kk.php";
                     } elseif ($page == 'permintaanRegis') {
                         $data = fetchData($conn, "SELECT id, nama_lengkap, email, role, status FROM users WHERE status = 'pending'");
