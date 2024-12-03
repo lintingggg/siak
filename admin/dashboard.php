@@ -105,7 +105,19 @@ function fetchData($conn, $query)
                     $page = $_GET['page'];
 
                     if ($page == 'dataPenduduk') {
-                        $data = fetchData($conn, "SELECT * FROM users");
+                        $data = fetchData($conn, "
+    SELECT 
+        p.nama_lengkap, 
+        p.nik, 
+        p.hubungan_keluarga, 
+        kk.nama_kepala AS kepala_keluarga 
+    FROM 
+        penduduk p
+    LEFT JOIN 
+        kartu_keluarga kk 
+    ON 
+        p.kk_id = kk.id;
+");
                         include "pages/data_penduduk.php";
                     } elseif ($page == 'dataKK') {
                         $data = fetchData($conn, "SELECT * FROM kartu_keluarga");
