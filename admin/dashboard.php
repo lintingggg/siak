@@ -105,10 +105,10 @@ function fetchData($conn, $query)
                     $page = $_GET['page'];
 
                     if ($page == 'dataPenduduk') {
-                        $data = fetchData($conn, "SELECT * FROM data_penduduk");
+                        $data = fetchData($conn, "SELECT * FROM users");
                         include "pages/data_penduduk.php";
                     } elseif ($page == 'dataKK') {
-                        $data = fetchData($conn, "SELECT * FROM data_kk");
+                        $data = fetchData($conn, "SELECT * FROM kartu_keluarga");
                         include "pages/data_kk.php";
                     } elseif ($page == 'permintaanRegis') {
                         $data = fetchData($conn, "SELECT id, nama_lengkap, email, role, status FROM users WHERE status = 'pending'");
