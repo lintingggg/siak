@@ -37,6 +37,7 @@ $data = $conn->query($query);
                 <th>NIK Kepala Keluarga</th>
                 <th>Alamat</th>
                 <th>Tanggal Selesai</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -50,6 +51,13 @@ $data = $conn->query($query);
                             <td>{$row['nik_kepala']}</td>
                             <td>{$row['alamat']}</td>
                             <td>{$row['created_at']}</td>
+                            <td>
+                                <form action='user_action_kk.php' method='post' style='display:inline-block;'>
+                                    <input type='hidden' name='action' value='delete'>
+                                    <input type='hidden' name='kartu_keluarga_id' value='{$row['id']}'>
+                                    <button type='submit' class='btn btn-danger btn-sm' onclick=\"return confirm('Apakah Anda yakin ingin menghapus data ini?')\">Hapus</button>
+                                </form>
+                            </td>
                         </tr>";
                     $no++;
                 }

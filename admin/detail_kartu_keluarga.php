@@ -89,6 +89,14 @@ if (isset($_GET['id'])) {
             <th>Status</th>
             <td><?php echo $row['status']; ?></td>
         </tr>
+        <tr>
+            <th>Foto Buku nikah</th>
+            <td><img src="../user/uploads/<?php echo $row['buku_nikah'] ?>  " alt="buku nikah" class="img-thumbnail" style="max-width: 200px;"></td>
+        </tr>
+        <!-- <tr>
+            <th>akte anak</th>
+            <td><img src="../user/uploads/  " alt="akte" class="img-thumbnail" style="max-width: 200px;"></td>
+        </tr> -->
     </table>
     <a href="dashboard.php" class="btn btn-primary">Kembali ke Daftar Permintaan</a>
 </div>

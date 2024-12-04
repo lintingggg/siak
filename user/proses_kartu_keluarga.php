@@ -80,11 +80,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Commit transaksi
         $conn->commit();
-        echo "Data berhasil disimpan.";
+
+        // Tampilkan pesan sukses dengan alert
+        echo "<script>
+            alert('Data berhasil disimpan.');
+            window.location.href = 'dashboard.php';
+        </script>";
+        exit();
 
     } catch (Exception $e) {
         $conn->rollback();
-        echo "Gagal menyimpan data: " . $e->getMessage();
+
+        // Tampilkan pesan error dengan alert
+        echo "<script>
+            alert('Gagal menyimpan data: " . addslashes($e->getMessage()) . "');
+            window.history.back();
+        </script>";
+        exit();
     }
 }
 ?>

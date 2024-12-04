@@ -21,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $foto_ktp = $_FILES['foto_ktp'];
     $foto_diri = $_FILES['foto_diri'];
 
-    $foto_ktp_path = "uploads/ktp_" . time() . "_" . basename($foto_ktp['name']);
-    $foto_diri_path = "uploads/diri_" . time() . "_" . basename($foto_diri['name']);
+    $foto_ktp_path = "ktp_" . time() . "_" . basename($foto_ktp['name']);
+    $foto_diri_path = "diri_" . time() . "_" . basename($foto_diri['name']);
 
     move_uploaded_file($foto_ktp['tmp_name'], $foto_ktp_path);
     move_uploaded_file($foto_diri['tmp_name'], $foto_diri_path);

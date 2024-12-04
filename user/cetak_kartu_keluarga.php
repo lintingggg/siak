@@ -84,8 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $kelurahan = $_POST['kelurahan'];
     $nama_istri = $_POST['nama_istri'];
     $nik_istri = $_POST['nik_istri'];
-    $tempat_lahir_istri = $_POST['tempat_lahir_istri'];
-    $tanggal_lahir_istri = $_POST['tanggal_lahir_istri'];
+    $tempat_lahir_istri = $_POST['tempat_lahir_istri'] ?? '';
+    $tanggal_lahir_istri = $_POST['tanggal_lahir_istri'] ?? '';
 
     // Tentukan direktori upload
     $uploadDir = 'uploads/';
@@ -95,37 +95,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         mkdir($uploadDir, 0777, true);
     }
 
-    // Proses file 'Buku Nikah' jika ada
+    // Proses file 'Buku Nikah'
     if (isset($_FILES['buku_nikah']) && $_FILES['buku_nikah']['error'] == 0) {
         $buku_nikah = $_FILES['buku_nikah'];
         $bukuNikahPath = $uploadDir . basename($buku_nikah['name']);
-
-        // Pindahkan file ke folder uploads
-        if (move_uploaded_file($buku_nikah['tmp_name'], $bukuNikahPath)) {
-            echo "<p>Buku Nikah berhasil diunggah: {$buku_nikah['name']}</p>";
-        } else {
-            echo "<p>Gagal mengunggah Buku Nikah.</p>";
-        }
+        move_uploaded_file($buku_nikah['tmp_name'], $bukuNikahPath);
     }
 
-    // Proses setiap file akte anak jika ada
+    // Proses file Akte Anak
     if (isset($_FILES['akte_anak']) && !empty($_FILES['akte_anak']['name'][0])) {
         foreach ($_FILES['akte_anak']['name'] as $index => $fileName) {
             if ($_FILES['akte_anak']['error'][$index] == 0) {
                 $akteAnakPath = $uploadDir . basename($fileName);
-
-                // Pindahkan file ke folder uploads
-                if (move_uploaded_file($_FILES['akte_anak']['tmp_name'][$index], $akteAnakPath)) {
-                    echo "<p>Akte Anak " . ($index + 1) . " berhasil diunggah: $fileName</p>";
-                } else {
-                    echo "<p>Gagal mengunggah Akte Anak " . ($index + 1) . "</p>";
-                }
+                move_uploaded_file($_FILES['akte_anak']['tmp_name'][$index], $akteAnakPath);
             }
         }
     }
 
-    // Tampilkan pesan berhasil
-    echo "<p>Data berhasil disimpan.</p>";
+    // Redirect dengan status sukses
+    header("Location: " . $_SERVER['PHP_SELF'] . "?status=success");
+    exit();
 }
 ?>
 
@@ -190,5 +179,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <button type="submit">Submit</button>
         </form>
     </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('status') === 'success') {
+            alert('Data berhasil dikirim.');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+        const form = document.querySelector('form');
+        
+        form.addEventListener('submit', (event) => {
+            const nikKepala = document.getElementById('nik-kepala').value.trim();
+            const nikIstri = document.getElementById('nik-istri').value.trim();
+
+            // Validasi NIK Kepala Keluarga
+            if (nikKepala.length !== 16 || isNaN(nikKepala)) {
+                alert('NIK harus 16 digit angka.');
+                event.preventDefault();
+                return;
+            }
+
+            // Validasi NIK Istri
+            if (nikIstri.length !== 16 || isNaN(nikIstri)) {
+                alert('NIK harus 16 digit angka.');
+                event.preventDefault();
+                return;
+            }
+        });
+    });
+    </script>
 </body>
 </html>
